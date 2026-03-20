@@ -1,0 +1,986 @@
+<!doctype html>
+<html lang="ru" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Физика Текста</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+html, body { height: 100%; margin: 0; }
+* { box-sizing: border-box; }
+
+.font-heading { font-family: 'Playfair Display', Georgia, serif; }
+.font-body { font-family: 'Source Sans 3', system-ui, sans-serif; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.3); } 50% { box-shadow: 0 0 20px 4px rgba(99, 102, 241, 0.15); } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+@keyframes confetti1 { 0% { transform: translate(0,0) rotate(0deg); opacity:1; } 100% { transform: translate(-60px,-80px) rotate(360deg); opacity:0; } }
+@keyframes confetti2 { 0% { transform: translate(0,0) rotate(0deg); opacity:1; } 100% { transform: translate(60px,-90px) rotate(-360deg); opacity:0; } }
+@keyframes confetti3 { 0% { transform: translate(0,0) rotate(0deg); opacity:1; } 100% { transform: translate(20px,-100px) rotate(270deg); opacity:0; } }
+
+.anim-fade { animation: fadeIn 0.5s ease both; }
+.anim-slide { animation: slideUp 0.6s ease both; }
+.anim-scale { animation: scaleIn 0.35s ease both; }
+.anim-pulse { animation: pulse-glow 2.5s ease-in-out infinite; }
+
+.style-chip { transition: all 0.2s ease; cursor: pointer; user-select: none; }
+.style-chip:hover { transform: translateY(-2px); filter: brightness(1.08); }
+.style-chip.selected { ring: 3px; transform: scale(1.05); }
+
+.text-card { transition: all 0.3s ease; }
+.text-card:hover { transform: translateY(-1px); }
+
+.grade-btn { transition: all 0.25s ease; }
+.grade-btn:hover { transform: translateY(-3px); }
+
+.result-correct { background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%); border-left: 4px solid #10b981; }
+.result-wrong { background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%); border-left: 4px solid #ef4444; }
+
+.confetti-1 { animation: confetti1 0.8s ease forwards; }
+.confetti-2 { animation: confetti2 0.8s ease forwards; }
+.confetti-3 { animation: confetti3 0.8s ease forwards; }
+
+.progress-ring { transition: stroke-dashoffset 0.6s ease; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(100,100,140,0.25); border-radius: 3px; }
+</style>
+  <script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        bg: { DEFAULT: '#0f0f1a', card: '#1a1a2e', hover: '#222240' },
+        accent: { DEFAULT: '#6366f1', light: '#818cf8', dim: '#4f46e5' },
+        surface: { DEFAULT: '#25254a', light: '#2e2e5e' },
+        txt: { DEFAULT: '#e2e2f0', dim: '#9898b8', bright: '#ffffff' }
+      }
+    }
+  }
+}
+</script>
+  <style>body { box-sizing: border-box; }</style>
+</head>
+<body class="h-full bg-bg font-body text-txt overflow-hidden">
+  <div id="app" class="h-full w-full flex flex-col overflow-auto">
+   
+   <nav id="main-nav" class="sticky top-0 z-50 bg-bg/90 backdrop-blur-md border-b border-surface px-4 py-3 flex items-center justify-between flex-shrink-0">
+    <div class="flex items-center gap-3">
+     <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-accent to-purple-500 flex items-center justify-center text-white font-heading font-bold text-sm">Φ</div>
+     <div>
+      <h1 id="nav-title" class="font-heading font-bold text-txt-bright text-lg leading-tight">Физика Текста</h1>
+      <p id="nav-subtitle" class="text-xs text-txt-dim leading-tight">Методология анализа текста</p>
+     </div>
+    </div>
+    <div id="nav-stats" class="flex items-center gap-4 text-sm"></div>
+   </nav>
+
+   <div id="screen-home" class="flex-1 overflow-auto px-4 py-6">
+    <div class="max-w-4xl mx-auto space-y-6">
+     
+     <div class="anim-fade text-center py-6">
+      <div class="inline-flex items-center gap-2 bg-surface/60 rounded-full px-4 py-1.5 text-xs text-accent-light mb-4"><i data-lucide="zap" style="width:14px;height:14px"></i> Казахстанский ЕНТ</div>
+      <h2 class="font-heading text-3xl md:text-4xl font-bold text-txt-bright mb-2">Архитектура и Стиль</h2>
+      <p class="text-txt-dim max-w-lg mx-auto">Тренируйся по классам, готовься к ЕНТ или анализируй любой текст через призму «Физики текста».</p>
+     </div>
+
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 anim-slide" style="animation-delay:0.15s">
+      
+      <button onclick="showGrades()" class="text-card text-left bg-bg-card border border-surface rounded-2xl p-6 hover:border-accent/40 group">
+       <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
+        <i data-lucide="graduation-cap" style="width:24px;height:24px" class="text-accent-light"></i>
+       </div>
+       <h3 class="font-heading font-bold text-xl text-txt-bright mb-1">По классам</h3>
+       <p class="text-sm text-txt-dim">5–11 класс. Тексты подобраны под уровень сложности.</p>
+       <div class="mt-3 text-xs text-accent-light flex items-center gap-1">Выбрать класс <i data-lucide="arrow-right" style="width:14px;height:14px"></i></div>
+      </button> 
+      
+      <button onclick="startENT()" class="text-card text-left bg-bg-card border border-surface rounded-2xl p-6 hover:border-purple-500/40 group">
+       <div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4 group-hover:bg-purple-500/20 transition-colors">
+        <i data-lucide="file-text" style="width:24px;height:24px" class="text-purple-400"></i>
+       </div>
+       <h3 class="font-heading font-bold text-xl text-txt-bright mb-1">ЕНТ подготовка</h3>
+       <p class="text-sm text-txt-dim">10 вариантов экзаменационного уровня с анализом.</p>
+       <div class="mt-3 text-xs text-purple-400 flex items-center gap-1">Начать вариант <i data-lucide="arrow-right" style="width:14px;height:14px"></i></div>
+      </button>
+
+      <button onclick="showLab()" class="text-card text-left bg-bg-card border border-surface rounded-2xl p-6 hover:border-emerald-500/40 group">
+       <div class="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-4 group-hover:bg-emerald-500/20 transition-colors">
+        <i data-lucide="microscope" style="width:24px;height:24px" class="text-emerald-400"></i>
+       </div>
+       <h3 class="font-heading font-bold text-xl text-txt-bright mb-1">Лаборатория</h3>
+       <p class="text-sm text-txt-dim">Вставь любой текст и проведи спектральный анализ.</p>
+       <div class="mt-3 text-xs text-emerald-400 flex items-center gap-1">Запустить ИИ <i data-lucide="arrow-right" style="width:14px;height:14px"></i></div>
+      </button>
+
+     </div>
+
+     <div class="anim-slide bg-bg-card border border-surface rounded-2xl p-6" style="animation-delay:0.3s">
+      <h3 class="font-heading font-bold text-lg text-txt-bright mb-4 flex items-center gap-2"><i data-lucide="book-open" style="width:20px;height:20px" class="text-accent-light"></i> Шпаргалка</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+       <div class="bg-surface/40 rounded-xl p-3"><div class="font-semibold text-emerald-400 mb-1">🟢 Научный</div><div class="text-txt-dim">Вектор: Объяснить. Термины, логика, объективность.</div></div>
+       <div class="bg-surface/40 rounded-xl p-3"><div class="font-semibold text-blue-400 mb-1">🔵 Официально-деловой</div><div class="text-txt-dim">Вектор: Предписать. Штампы, канцеляризмы.</div></div>
+       <div class="bg-surface/40 rounded-xl p-3"><div class="font-semibold text-red-400 mb-1">🔴 Публицистический</div><div class="text-txt-dim">Вектор: Воздействовать. Оценочность, призывы.</div></div>
+       <div class="bg-surface/40 rounded-xl p-3"><div class="font-semibold text-yellow-400 mb-1">🟡 Художественный</div><div class="text-txt-dim">Вектор: Изобразить. Метафоры, эпитеты.</div></div>
+       <div class="bg-surface/40 rounded-xl p-3"><div class="font-semibold text-orange-400 mb-1">🟠 Разговорный</div><div class="text-txt-dim">Вектор: Общение. Неполные предложения, сленг.</div></div>
+       <div class="bg-surface/40 rounded-xl p-3"><div class="font-semibold text-teal-400 mb-1">⚪ Научно-популярный</div><div class="text-txt-dim">Диффузия: Термины + диалог с читателем.</div></div>
+      </div>
+      <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+       <div class="bg-surface/40 rounded-xl p-3"><div class="font-semibold text-cyan-400 mb-1">⚡ Повествование</div><div class="text-txt-dim">Кинетика. Хронология, глаголы сов. вида.</div></div>
+       <div class="bg-surface/40 rounded-xl p-3"><div class="font-semibold text-pink-400 mb-1">📷 Описание</div><div class="text-txt-dim">Потенциал. Признаки, застывший кадр.</div></div>
+       <div class="bg-surface/40 rounded-xl p-3"><div class="font-semibold text-amber-400 mb-1">⚛️ Рассуждение</div><div class="text-txt-dim">Цепная реакция. Тезис → аргумент → вывод.</div></div>
+      </div>
+     </div>
+
+     <div id="home-stats" class="anim-slide bg-bg-card border border-surface rounded-2xl p-6" style="animation-delay:0.4s">
+      <h3 class="font-heading font-bold text-lg text-txt-bright mb-4 flex items-center gap-2"><i data-lucide="bar-chart-3" style="width:20px;height:20px" class="text-accent-light"></i> Моя статистика</h3>
+      <div id="stats-content" class="text-txt-dim text-sm">Загрузка...</div>
+     </div>
+    </div>
+   </div>
+
+   <div id="screen-lab" class="flex-1 overflow-auto px-4 py-6 hidden">
+    <div class="max-w-4xl mx-auto">
+     <button onclick="goHome()" class="flex items-center gap-2 text-sm text-txt-dim hover:text-accent-light mb-6 transition-colors"> <i data-lucide="arrow-left" style="width:16px;height:16px"></i> Назад </button>
+     
+     <h2 class="font-heading text-2xl font-bold text-txt-bright mb-2 flex items-center gap-2">
+         <i data-lucide="microscope" class="text-emerald-400"></i> Лабораторный Анализ
+     </h2>
+     <p class="text-txt-dim text-sm mb-6">Вставьте любой текст. Алгоритм разобьет его на элементы, найдет массу и определит векторы силы.</p>
+     
+     <textarea id="lab-input" class="w-full h-48 bg-bg-card border border-surface rounded-xl p-5 text-txt focus:border-emerald-500/50 outline-none transition-colors mb-4 resize-none leading-relaxed" placeholder="Вставьте текст сюда..."></textarea>
+     
+     <div id="lab-error" class="hidden text-red-400 text-sm mb-4 font-bold bg-red-500/10 p-4 rounded-xl border-l-4 border-red-500"></div>
+     
+     <button onclick="runLabAnalysis()" class="w-full py-4 rounded-xl font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition-all text-sm mb-8 shadow-lg shadow-emerald-900/20">ЗАПУСТИТЬ СПЕКТРОМЕТР</button>
+     
+     <div id="lab-results" class="space-y-6 hidden"></div>
+    </div>
+   </div>
+
+   <div id="screen-grades" class="flex-1 overflow-auto px-4 py-6 hidden">
+    <div class="max-w-3xl mx-auto">
+     <button onclick="goHome()" class="flex items-center gap-2 text-sm text-txt-dim hover:text-accent-light mb-6 transition-colors"> <i data-lucide="arrow-left" style="width:16px;height:16px"></i> Назад </button>
+     <h2 class="font-heading text-2xl font-bold text-txt-bright mb-6">Выбери класс</h2>
+     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="grades-grid"></div>
+    </div>
+   </div>
+
+   <div id="screen-quiz" class="flex-1 overflow-auto px-4 py-6 hidden">
+    <div class="max-w-3xl mx-auto">
+     <div class="flex items-center justify-between mb-4">
+      <button onclick="goBack()" class="flex items-center gap-2 text-sm text-txt-dim hover:text-accent-light transition-colors"> <i data-lucide="arrow-left" style="width:16px;height:16px"></i> Назад </button>
+      <div id="quiz-progress" class="text-sm text-txt-dim bg-surface px-3 py-1 rounded-full"></div>
+     </div>
+     <div id="quiz-container"></div>
+    </div>
+   </div>
+
+   <div id="screen-results" class="flex-1 overflow-auto px-4 py-6 hidden">
+    <div class="max-w-2xl mx-auto" id="results-container"></div>
+   </div>
+
+  </div>
+
+  <script>
+// ===== DICTIONARIES & ANALYZER CORE (v8.5) =====
+const STOP_WORDS = new Set(["и", "в", "на", "с", "по", "к", "у", "из", "за", "от", "для", "но", "а", "да", "что", "как", "не", "ни", "же", "ли", "бы", "это", "так", "о", "об", "то", "или", "при", "все", "он", "она", "они", "его", "ее", "их", "только", "уже", "еще", "кто", "где", "теперь", "когда", "там", "здесь"]);
+const WEAK_WORDS = new Set(["свой", "этот", "который", "такой", "очень", "быть", "весь", "год", "время", "дело", "человек", "жизнь", "один", "каждый", "другой", "самый", "чтобы", "свое", "свои", "себя", "наш", "ваш"]);
+
+const isCol = (w) => /^(ну|ведь|просто|вообще|кстати|конечно|наверное|типа|вдруг|разве|прямо|вроде|честно|жутко|блин|короче)$/.test(w);
+const isOff = (w) => /^(акт|лицо|срок|пункт|целях|документ)$/.test(w) || /^(согласн|настоящ|постановлени|заявлени|договор|обязан|вышеуказан|нижеподписавш|установлен|законодательств|надлежащ|порядок|стать|нарушени|ответственност|регламент)/.test(w);
+const isPub = (w) => /^(мы|наш|вы|я|мир|долг)$/.test(w) || /^(представь|вспомн|давайт|подумайт|важн|проблем|обществ|сегодн|должн|вмест|наци|граждан|человечеств|справедливост|правд|патриот|социальн|актуальн|оценочн|политическ)/.test(w);
+const isArt = (w) => /^(душа|сердце|небо|солнце|ветер|дождь|плач|свет|тьма)$/.test(w) || /^(словн|будт|точн|невероятн|прекрасн|яростн|мрачн|первобытн|пронзительн|ледян|гулко|неумолим|пелен|тревог|триумф|ярко|горьк|сладк|одинок|печальн|радостн)/.test(w);
+
+// Мощный фильтр, понимающий и точные науки, и гуманитарные
+const isSci = (w) => /^(процесс|систем|анализ|результат|исследов|факт|метод|теори|явлени|структур|функци|свойств|учен|наук|эксперимент|открыти|поняти|геном|днк|молекул|термин|закон|энерг|масс|скорост|технолог|эволюц|орган|клетк|веществ|размножени|дыхани|животн|растени|вид|класс|отряд|семейств|тип|групп|позвоноч|беспозвоноч|амфиб|земновод|млекопита|пресмыка|насеком|птиц|рыб|хордов|конечност|среда|природ|объективн|отвлечен|синтакс|семант|предикат|актант|презумпц|модальн|суждени|правил|поняти|категори)/.test(w) || /^(био|гео|физ|хим|эко|зоо|микро|макро|электро|термо|гидро|агро|лингв|филол)/.test(w) || /(ци[яиюей]|ций|циях|изм[а-я]?|логи[яиюей]|генез|фикат|оид[а-я]?)$/.test(w);
+
+const REASONING_MARKERS = ["потому", "поэтому", "следовательно", "итак", "таким", "образом", "во-первых", "во-вторых", "значит", "вопреки", "поскольку", "причина", "вывод", "однако", "хотя", "несмотря"];
+
+function runCoreAnalysis(rawText) {
+    const lowerText = rawText.toLowerCase();
+    const sentences = rawText.match(/[^.!?]+[.!?]+/g) || [rawText];
+    const words = lowerText.match(/[а-яё\-]+/g) || [];
+    const meaningfulWords = words.filter(w => !STOP_WORDS.has(w) && w.length > 3);
+
+    const tokens = rawText.split(/([а-яА-ЯёЁa-zA-Z\-]+)/);
+    let highlightedHTML = "";
+    let sciScore = 0, offScore = 0, pubScore = 0, artScore = 0, colScore = 0;
+    
+    tokens.forEach(token => {
+        const w = token.toLowerCase();
+        if (/[а-яё]/i.test(w) && w.length > 3) {
+            if (isCol(w)) { highlightedHTML += `<span class="bg-orange-600/80 text-white px-1 rounded" title="Разговорный">${token}</span>`; colScore++; }
+            else if (isOff(w)) { highlightedHTML += `<span class="bg-blue-600/80 text-white px-1 rounded" title="Официально-деловой">${token}</span>`; offScore++; }
+            else if (isPub(w)) { highlightedHTML += `<span class="bg-red-600/80 text-white px-1 rounded" title="Публицистический">${token}</span>`; pubScore++; }
+            else if (isSci(w)) { highlightedHTML += `<span class="bg-emerald-600/80 text-white px-1 rounded" title="Научный">${token}</span>`; sciScore++; }
+            else if (isArt(w)) { highlightedHTML += `<span class="bg-yellow-500/90 text-black px-1 rounded" title="Художественный">${token}</span>`; artScore++; }
+            else { highlightedHTML += token; }
+        } else { highlightedHTML += token; }
+    });
+
+    const rootCounts = {}; const rootToWord = {}; 
+    meaningfulWords.forEach(w => {
+        if (WEAK_WORDS.has(w) || w.length < 4) return;
+        let root = w.replace(/(а|я|о|е|и|ы|у|ю|ом|ем|ами|ями|ов|ев|ей|ий|ый|ая|ое|ые|ие|ия|ию|ием|остью|ости|тся|ться|ет|ют|ут|ят|ит)$/i, '');
+        if (root.length < 3) root = w;
+        let weight = (w.endsWith('ция') || w.endsWith('изм') || w.endsWith('ость') || w.endsWith('ие')) ? 2.5 : 1;
+        rootCounts[root] = (rootCounts[root] || 0) + weight;
+        if (!rootToWord[root] || rootToWord[root].length > w.length) rootToWord[root] = w;
+    });
+
+    const bigrams = {};
+    for (let i = 0; i < words.length - 1; i++) {
+        let w1 = words[i], w2 = words[i+1];
+        if (w1.length > 4 && w2.length > 4 && !STOP_WORDS.has(w1) && !STOP_WORDS.has(w2) && !WEAK_WORDS.has(w1) && !WEAK_WORDS.has(w2)) {
+            if (/(ый|ий|ая|яя|ое|ее|ые|ие)$/i.test(w1)) {
+                let phrase = w1 + " " + w2; bigrams[phrase] = (bigrams[phrase] || 0) + 1;
+            }
+        }
+    }
+
+    const sortedRoots = Object.keys(rootCounts).sort((a, b) => {
+        let wa = rootCounts[a], wb = rootCounts[b];
+        let wA = rootToWord[a]||"", wB = rootToWord[b]||"";
+        if (/(ть|л|ящий|ающий|вший|ти|ся|сь)$/.test(wA)) wa -= 2;
+        if (/(ть|л|ящий|ающий|вший|ти|ся|сь)$/.test(wB)) wb -= 2;
+        return wb - wa;
+    });
+
+    let topWordsList = [];
+    const sortedBigrams = Object.keys(bigrams).sort((a, b) => bigrams[b] - bigrams[a]);
+    if (sortedBigrams.length > 0 && bigrams[sortedBigrams[0]] >= 2) topWordsList.push(sortedBigrams[0]);
+
+    for (let root of sortedRoots) {
+        let word = rootToWord[root]; if (!word) continue;
+        if (topWordsList.some(p => p.includes(word.substring(0, 4)))) continue;
+        topWordsList.push(word); if (topWordsList.length >= 8) break;
+    }
+    const themeString = topWordsList.slice(0,3).join(", ");
+
+    let maxGravity = 0; let bestSentence = "";
+    sentences.forEach(sentence => {
+        const sWords = sentence.toLowerCase().match(/[а-яё\-]+/g) || [];
+        let gravity = 0;
+        sWords.forEach(w => { 
+            if (meaningfulWords.includes(w)) {
+                let root = w.replace(/(а|я|о|е|и|ы|у|ю|ом|ем|ами|ями|ов|ев|ей|ий|ый|ая|ое|ые|ие|ия|ию|ием|остью|ости|тся|ться|ет|ют|ут|ят|ит)$/i, '');
+                if (root.length < 3) root = w;
+                gravity += rootCounts[root] || 0; 
+            }
+        });
+        if (REASONING_MARKERS.some(m => sWords.includes(m))) gravity += 25; 
+        if (gravity > maxGravity) { maxGravity = gravity; bestSentence = sentence.trim(); }
+    });
+
+    let reasoningScore = words.filter(w => REASONING_MARKERS.includes(w)).length * 5; 
+    let kineticVerbs = meaningfulWords.filter(w => /(ть|ти|л|ла|ли|ет|ют|ут|ят|ит|тся|ться|ся|сь)$/i.test(w)).length;
+    let potentialAdjs = meaningfulWords.filter(w => /(ый|ая|ое|ий|ые|ую|ым|ом|ее|их|ых|енный|ющий|ащий|ящий|вший|ав|ив)$/i.test(w)).length;
+
+    let typeText = "", typeReason = "";
+    if (reasoningScore > kineticVerbs && reasoningScore > potentialAdjs) {
+        if (kineticVerbs > 3) { typeText = "РАССУЖДЕНИЕ с элементами повествования"; typeReason = `Каркас текста — доказательство тезиса. Элементы повествования используются как аргумент.`; } 
+        else { typeText = "РАССУЖДЕНИЕ (Чистый тип)"; typeReason = `Исследование свойств явлений. Текст строится на умозаключениях и выводах.`; }
+    } else if (kineticVerbs >= potentialAdjs) {
+        if (potentialAdjs > kineticVerbs * 0.4) { typeText = "ПОВЕСТВОВАНИЕ с элементами описания"; typeReason = `Хронологическая последовательность прерывается паузами на перечисление застывших признаков.`; } 
+        else { typeText = "ПОВЕСТВОВАНИЕ (Чистый тип)"; typeReason = `Рассказ о событии во времени. Подчёркивается динамизм и смена эпизодов.`; }
+    } else {
+        if (reasoningScore > 0) { typeText = "ОПИСАНИЕ с элементами рассуждения"; typeReason = `Перечисление признаков дополняется авторскими объяснениями о причинах.`; } 
+        else { typeText = "ОПИСАНИЕ (Чистый тип)"; typeReason = `Представление о предмете через детализацию. Текст статичен.`; }
+    }
+
+    let goal = "", style = "", styleColor = "", styleReason = "";
+    let themeTarget = themeString ? themeString.toLowerCase() : "темы";
+
+    if (offScore >= 2 && sciScore < 2) {
+        goal = `ПРЕДПИСАТЬ нормы и правила, касающиеся: ${themeTarget}.`; style = "ОФИЦИАЛЬНО-ДЕЛОВОЙ"; styleColor = "text-blue-400";
+        styleReason = `Зафиксирована ледяная стандартизация (канцеляризмы). Эмоции отсутствуют.`;
+    } else if (sciScore >= 2 && pubScore === 0) {
+        goal = `ОБЪЯСНИТЬ объективные факты и понятия: ${themeTarget}.`; style = "НАУЧНЫЙ"; styleColor = "text-emerald-400";
+        styleReason = `Характеризуется логичностью, объективностью и терминологией (${sciScore} шт). Обилие существительных.`;
+    } else if (sciScore >= 1 && pubScore >= 1 && offScore === 0) {
+        goal = `ПОПУЛЯРИЗИРОВАТЬ сложные концепции: ${themeTarget}.`; style = "НАУЧНО-ПОПУЛЯРНЫЙ"; styleColor = "text-teal-400";
+        styleReason = `Синтез: к сухой научной базе добавляется диалог с читателем для доступности.`;
+    } else if (pubScore >= 1 && artScore < pubScore + 2) {
+        goal = `ВОЗДЕЙСТВОВАТЬ на читателя, убедить про: ${themeTarget}.`; style = "ПУБЛИЦИСТИЧЕСКИЙ"; styleColor = "text-red-400";
+        styleReason = `Текст отличается оценочностью и эмоциональностью. Призывность и общественная лексика.`;
+    } else if (colScore >= 2) {
+        goal = `НЕФОРМАЛЬНЫЙ ОБМЕН мыслями на тему: ${themeTarget}.`; style = "РАЗГОВОРНЫЙ"; styleColor = "text-orange-400";
+        styleReason = `Сработали детекторы устной речи: слова-паразиты, бытовая лексика.`;
+    } else {
+        goal = `ИЗОБРАЗИТЬ атмосферу и передать образы: ${themeTarget}.`; style = "ХУДОЖЕСТВЕННЫЙ"; styleColor = "text-yellow-400";
+        styleReason = `Высокая плотность метафор и эмоционально-окрашенной лексики без терминов.`;
+    }
+
+    return {
+        highlightedHTML, topWordsList, themeString, bestSentence, 
+        reasoningScore, kineticVerbs, potentialAdjs, typeText, typeReason,
+        goal, style, styleColor, styleReason
+    };
+}
+
+// ===== DATA =====
+const TEXTS = {
+  // Grade 5
+  "5": [
+    { id:"5-1", text:"Верблюд — крупное животное, приспособленное к жизни в пустыне. Его горбы хранят жир, который помогает ему выживать без воды несколько дней. Верблюды бывают двух видов: одногорбые (дромадеры) и двугорбые (бактрианы). У них длинные ноги с широкими ступнями, которые не проваливаются в песок.", style:"Научно-популярный", type:"Описание", theme:"Верблюд и его приспособления к пустыне", thesis:"Его горбы хранят жир, который помогает ему выживать без воды несколько дней.", keywords:["верблюд","пустыня","горбы","жир","вода","ноги","песок"] },
+    { id:"5-2", text:"Однажды мальчик по имени Асан нашёл на берегу реки маленькую черепаху. Она была ранена и не могла двигаться. Асан осторожно поднял её и отнёс домой. Каждый день он менял ей повязку и кормил свежей травой. Через месяц черепаха окрепла, и Асан отпустил её обратно к реке.", style:"Художественный", type:"Повествование", theme:"Спасение черепахи мальчиком", thesis:"Каждый день он менял ей повязку и кормил свежей травой.", keywords:["мальчик","Асан","черепаха","река","повязка","трава","месяц"] },
+    { id:"5-3", text:"Почему нужно беречь воду? Вода — основа жизни на Земле. Без неё не могут существовать ни люди, ни животные, ни растения. Однако запасы пресной воды ограничены. Если мы будем тратить её бездумно, будущим поколениям может не хватить чистой воды. Поэтому каждый из нас должен экономить воду.", style:"Публицистический", type:"Рассуждение", theme:"Необходимость беречь воду", thesis:"Если мы будем тратить её бездумно, будущим поколениям может не хватить чистой воды.", keywords:["вода","жизнь","Земля","запасы","пресная","поколения","экономить"] },
+  ],
+  // Grade 6
+  "6": [
+    { id:"6-1", text:"Фотосинтез — это процесс, при котором зелёные растения превращают солнечный свет в питательные вещества. Для этого необходимы углекислый газ и вода. В результате фотосинтеза выделяется кислород, которым мы дышим. Этот процесс происходит в хлоропластах — специальных клеточных структурах, содержащих хлорофилл.", style:"Научный", type:"Описание", theme:"Процесс фотосинтеза у растений", thesis:"Фотосинтез — это процесс, при котором зелёные растения превращают солнечный свет в питательные вещества.", keywords:["фотосинтез","растения","свет","кислород","хлорофилл","углекислый","хлоропласты"] },
+    { id:"6-2", text:"Настоящим уведомляем, что в период с 10 по 15 марта 2024 года в здании школы №45 будут проводиться плановые ремонтные работы. В связи с этим занятия для учащихся 1–6 классов переносятся в здание школы №12 по адресу: ул. Абая, 15. Просим родителей обеспечить своевременную доставку детей к месту проведения занятий.", style:"Официально-деловой", type:"Рассуждение", theme:"Уведомление о переносе занятий", thesis:"Занятия для учащихся 1–6 классов переносятся в здание школы №12.", keywords:["уведомление","школа","ремонт","занятия","учащиеся","родители","адрес"] },
+    { id:"6-3", text:"Степь расстилалась до самого горизонта, словно бескрайний золотой ковёр. Ветер гнал по ней волны ковыля, и казалось, будто земля дышит. Высоко в небе парил беркут, высматривая добычу зоркими глазами. Где-то вдалеке синели горы, подпирая небо своими снежными вершинами.", style:"Художественный", type:"Описание", theme:"Красота казахской степи", thesis:"Степь расстилалась до самого горизонта, словно бескрайний золотой ковёр.", keywords:["степь","горизонт","ковыль","ветер","беркут","горы","небо"] },
+  ],
+  // Grade 7
+  "7": [
+    { id:"7-1", text:"Кочевое скотоводство было основой хозяйственной деятельности казахов на протяжении многих веков. Люди перемещались с места на место в поисках пастбищ для скота. Весной аулы отправлялись на жайляу — летние пастбища в горах. Осенью возвращались на кыстау — зимовки. Такой образ жизни определял культуру, традиции и мировоззрение народа.", style:"Научно-популярный", type:"Повествование с элементами описания", theme:"Кочевое скотоводство казахов", thesis:"Такой образ жизни определял культуру, традиции и мировоззрение народа.", keywords:["кочевое","скотоводство","казахи","пастбища","жайляу","кыстау","культура"] },
+    { id:"7-2", text:"Молодёжь — это будущее нашей страны. Именно от молодых людей зависит, каким будет Казахстан через двадцать, тридцать лет. Но готова ли молодёжь к этой ответственности? Мы видим, как тысячи юношей и девушек получают образование за рубежом и возвращаются, чтобы строить новую экономику. Наша задача — создать для них все условия.", style:"Публицистический", type:"Рассуждение", theme:"Роль молодёжи в будущем Казахстана", thesis:"Именно от молодых людей зависит, каким будет Казахстан через двадцать, тридцать лет.", keywords:["молодёжь","страна","Казахстан","ответственность","образование","экономика","задача"] },
+    { id:"7-3", text:"— Ну что, ты идёшь завтра на соревнования или нет? — спросил Тимур, перебрасывая мяч из руки в руку. — Не знаю, — вздохнул Арман. — Мама говорит, надо к контрольной готовиться. — Да ладно тебе! Подготовишься ещё. Такой турнир раз в году бывает! — Ладно, попробую уговорить...", style:"Разговорный", type:"Повествование", theme:"Разговор друзей о соревнованиях", thesis:"Такой турнир раз в году бывает!", keywords:["соревнования","Тимур","Арман","мяч","контрольная","турнир","мама"] },
+  ],
+  // Grade 8
+  "8": [
+    { id:"8-1", text:"Экосистема — это сложная совокупность живых организмов и среды их обитания, находящихся в постоянном взаимодействии. Каждый компонент экосистемы выполняет определённую функцию: продуценты (растения) синтезируют органические вещества, консументы (животные) потребляют их, а редуценты (бактерии, грибы) разлагают отмершие организмы, возвращая минеральные вещества в почву. Нарушение одного звена приводит к дисбалансу всей системы.", style:"Научный", type:"Рассуждение с элементами описания", theme:"Структура и функционирование экосистемы", thesis:"Нарушение одного звена приводит к дисбалансу всей системы.", keywords:["экосистема","организмы","продуценты","консументы","редуценты","функция","дисбаланс"] },
+    { id:"8-2", text:"Абай Кунанбаев — великий казахский поэт, мыслитель и просветитель. Родившись в 1845 году в семье старшего султана, он с детства проявлял тягу к знаниям. Абай изучал восточную и русскую литературу, переводил произведения Пушкина, Лермонтова и Крылова на казахский язык. Его «Слова назидания» стали философским завещанием народу, призывающим к образованию и нравственному совершенствованию.", style:"Научно-популярный", type:"Повествование с элементами описания", theme:"Жизнь и наследие Абая Кунанбаева", thesis:"Его «Слова назидания» стали философским завещанием народу, призывающим к образованию и нравственному совершенствованию.", keywords:["Абай","поэт","мыслитель","литература","перевод","назидания","образование"] },
+    { id:"8-3", text:"Зимний лес стоял тихий и торжественный, укутанный в белоснежное покрывало. Каждая ветка, каждый сучок были обрисованы серебристым инеем. Солнце, едва выглянувшее из-за низких облаков, бросало косые розоватые лучи, отчего снег вспыхивал тысячами алмазных искр. В этой морозной тишине слышался лишь далёкий стук дятла, нарушавший величавый покой спящего леса.", style:"Художественный", type:"Описание", theme:"Красота зимнего леса", thesis:"Зимний лес стоял тихий и торжественный, укутанный в белоснежное покрывало.", keywords:["лес","зимний","иней","солнце","снег","тишина","дятел","покой"] },
+  ],
+  // Grade 9
+  "9": [
+    { id:"9-1", text:"В соответствии с пунктом 3 статьи 47 Закона Республики Казахстан «Об образовании», образовательные учреждения обязаны обеспечить безопасные условия для обучения и воспитания учащихся. Руководители учебных заведений несут персональную ответственность за соблюдение санитарно-эпидемиологических норм, требований пожарной безопасности и охраны труда на территории учреждения.", style:"Официально-деловой", type:"Рассуждение", theme:"Обязанности образовательных учреждений по закону", thesis:"Руководители учебных заведений несут персональную ответственность за соблюдение санитарно-эпидемиологических норм.", keywords:["закон","образование","учреждения","безопасность","ответственность","нормы","руководители"] },
+    { id:"9-2", text:"Цифровизация проникает во все сферы нашей жизни: от медицины до сельского хозяйства. Казахстан активно развивает программу «Цифровой Казахстан», направленную на модернизацию государственных услуг и создание IT-инфраструктуры. Но возникает вопрос: не увеличивает ли цифровой разрыв неравенство между городом и селом? Мы не должны допустить, чтобы технологический прогресс оставил за бортом сельское население нашей страны.", style:"Публицистический", type:"Рассуждение", theme:"Цифровизация и неравенство в Казахстане", thesis:"Мы не должны допустить, чтобы технологический прогресс оставил за бортом сельское население нашей страны.", keywords:["цифровизация","Казахстан","модернизация","технологии","неравенство","село","прогресс"] },
+    { id:"9-3", text:"Тепловые двигатели преобразуют внутреннюю энергию топлива в механическую работу. Коэффициент полезного действия (КПД) любого теплового двигателя определяется разностью температур нагревателя и холодильника. Согласно второму закону термодинамики, невозможно создать вечный двигатель второго рода, который бы полностью превращал теплоту в работу. Идеальный цикл Карно задаёт верхний предел КПД для данных температурных условий.", style:"Научный", type:"Рассуждение", theme:"Принципы работы тепловых двигателей", thesis:"Согласно второму закону термодинамики, невозможно создать вечный двигатель второго рода.", keywords:["двигатель","КПД","термодинамика","энергия","температура","Карно","работа"] },
+  ],
+  // Grade 10
+  "10": [
+    { id:"10-1", text:"Генетическая информация хранится в молекулах ДНК в виде последовательности нуклеотидов. Процесс передачи генетической информации включает три ключевых этапа: репликацию (удвоение ДНК), транскрипцию (синтез мРНК по матрице ДНК) и трансляцию (синтез белка на рибосомах по матрице мРНК). Мутации — изменения в нуклеотидной последовательности — могут приводить к нарушению функций белков и, как следствие, к возникновению генетических заболеваний.", style:"Научный", type:"Рассуждение с элементами описания", theme:"Передача генетической информации и мутации", thesis:"Мутации — изменения в нуклеотидной последовательности — могут приводить к нарушению функций белков.", keywords:["ДНК","нуклеотиды","репликация","транскрипция","трансляция","мутации","белок"] },
+    { id:"10-2", text:"Он стоял на краю обрыва, и ветер трепал полы его старого чапана. Внизу, в ущелье, ревела река, унося с собой остатки последнего снега. Казалось, весь мир сжался до этой точки — до каменной кромки между небом и бездной. «Отец говорил: степь учит терпению, а горы — мужеству», — подумал он и сделал первый шаг вниз по узкой тропе, ведущей к далёкому аулу.", style:"Художественный", type:"Повествование с элементами описания", theme:"Путь героя через горы к аулу", thesis:"Степь учит терпению, а горы — мужеству.", keywords:["обрыв","ветер","река","горы","степь","тропа","аул","мужество"] },
+    { id:"10-3", text:"Экологические проблемы Аральского моря стали символом экологической катастрофы мирового масштаба. За последние пятьдесят лет площадь моря сократилась более чем втрое. Высыхание Арала привело к опустыниванию региона, засолению почв и ухудшению здоровья местного населения. Казахстан при поддержке Всемирного банка реализовал проект по спасению Северного Арала, что позволило частично восстановить экосистему и рыболовство.", style:"Публицистический", type:"Рассуждение с элементами повествования", theme:"Экологическая катастрофа Аральского моря", thesis:"Казахстан при поддержке Всемирного банка реализовал проект по спасению Северного Арала.", keywords:["Арал","экология","катастрофа","опустынивание","засоление","Казахстан","восстановление"] },
+  ],
+  // Grade 11
+  "11": [
+    { id:"11-1", text:"Квантово-механическая модель атома описывает электрон не как частицу на орбите, а как волновую функцию, распределённую в пространстве вокруг ядра. Вероятность обнаружения электрона определяется квадратом модуля волновой функции |ψ|². Принцип неопределённости Гейзенберга устанавливает фундаментальное ограничение на одновременное определение координаты и импульса микрочастицы: ΔxΔp ≥ ℏ/2. Это означает, что на субатомном уровне классическая механика неприменима.", style:"Научный", type:"Рассуждение", theme:"Квантово-механическая модель атома", thesis:"Принцип неопределённости Гейзенберга устанавливает фундаментальное ограничение на одновременное определение координаты и импульса.", keywords:["квантовый","атом","электрон","волновая","Гейзенберг","неопределённость","механика"] },
+    { id:"11-2", text:"Искусственный интеллект перестал быть фантастикой и стал реальным фактором геополитического соперничества. Государства, лидирующие в разработке ИИ, получают колоссальные экономические и военные преимущества. Однако мы обязаны задать себе неудобный вопрос: кто контролирует алгоритмы, определяющие нашу повседневную жизнь? Без международного регулирования мы рискуем оказаться в мире, где решения о судьбах миллионов принимаются непрозрачными системами, неподотчётными обществу.", style:"Публицистический", type:"Рассуждение", theme:"Риски и вызовы искусственного интеллекта", thesis:"Без международного регулирования мы рискуем оказаться в мире, где решения о судьбах миллионов принимаются непрозрачными системами.", keywords:["интеллект","ИИ","геополитика","алгоритмы","регулирование","контроль","общество"] },
+    { id:"11-3", text:"Ночь опускалась на город медленно, как занавес в театре после последнего акта. Фонари зажигались один за другим, отбрасывая на мокрый асфальт дрожащие жёлтые круги. Она шла по бульвару, не замечая ни прохожих, ни машин — мысли её были далеко, там, где море шумело у подножия белых скал, а время ещё не научилось торопиться. В кармане лежало нераспечатанное письмо, и каждый шаг приближал её к решению, которое изменит всё.", style:"Художественный", type:"Повествование с элементами описания", theme:"Ночная прогулка и судьбоносное решение", thesis:"Каждый шаг приближал её к решению, которое изменит всё.", keywords:["ночь","город","фонари","бульвар","мысли","письмо","решение","море"] },
+  ],
+  // ENT Variants
+  "ent-1": [
+    { id:"e1-1", text:"Озоновый слой располагается в стратосфере на высоте от 15 до 35 километров и играет ключевую роль в защите биосферы от жёсткого ультрафиолетового излучения Солнца. Молекулы озона (O₃) поглощают УФ-лучи, предотвращая их губительное воздействие на живые организмы. Разрушение озонового слоя хлорфторуглеродами (ХФУ) привело к образованию так называемых «озоновых дыр», что увеличивает риск онкологических заболеваний кожи и катаракты у людей.", style:"Научный", type:"Рассуждение с элементами описания", theme:"Озоновый слой и его разрушение", thesis:"Разрушение озонового слоя хлорфторуглеродами привело к образованию «озоновых дыр».", keywords:["озон","стратосфера","ультрафиолет","излучение","ХФУ","биосфера","разрушение"] },
+    { id:"e1-2", text:"Утро в ауле начиналось ещё до рассвета. Бабушка первой выходила во двор, раздувала угли в самоваре и ставила курт сушиться на широкой доске. Дед седлал коня и уезжал проверять отару. Дети просыпались от запаха свежих баурсаков, которые мать жарила в большом казане. Каждое утро было похоже на предыдущее, и в этом однообразии была своя тихая, неколебимая красота.", style:"Художественный", type:"Повествование с элементами описания", theme:"Утро в казахском ауле", thesis:"В этом однообразии была своя тихая, неколебимая красота.", keywords:["аул","бабушка","самовар","курт","дед","баурсаки","утро","красота"] },
+    { id:"e1-3", text:"Казахстан обладает значительными запасами возобновляемых энергетических ресурсов. По оценкам экспертов, потенциал ветровой энергетики страны составляет около 920 миллиардов кВт·ч в год. Однако на сегодняшний день доля возобновляемых источников энергии в общем энергобалансе не превышает трёх процентов. Почему мы так медленно движемся к «зелёной» энергетике? Ответ кроется в недостаточных инвестициях, устаревшей инфраструктуре и отсутствии политической воли.", style:"Публицистический", type:"Рассуждение", theme:"Развитие возобновляемой энергетики в Казахстане", thesis:"Ответ кроется в недостаточных инвестициях, устаревшей инфраструктуре и отсутствии политической воли.", keywords:["энергетика","возобновляемые","ветровая","Казахстан","инвестиции","инфраструктура","зелёная"] },
+  ],
+  "ent-2": [
+    { id:"e2-1", text:"На основании решения педагогического совета от 15 сентября 2024 года, протокол №3, учащимся 9-х и 11-х классов предоставляется право на дополнительные консультации по предметам ЕНТ в количестве двух академических часов в неделю. Консультации проводятся во внеурочное время по расписанию, утверждённому заместителем директора по учебной работе. Ответственность за посещаемость возлагается на классных руководителей.", style:"Официально-деловой", type:"Рассуждение", theme:"Организация дополнительных консультаций по ЕНТ", thesis:"Учащимся предоставляется право на дополнительные консультации по предметам ЕНТ.", keywords:["решение","педагогический","консультации","ЕНТ","расписание","ответственность","директор"] },
+    { id:"e2-2", text:"Знаете ли вы, что казахская юрта — это не просто жилище, а настоящее инженерное чудо? Кереге — раздвижная решётка стен — обеспечивает прочность конструкции. Уыки — изогнутые жерди — создают купольную форму, которая идеально противостоит ветру. А шанырак — верхний круг — не только пропускает свет и воздух, но и является символом семейного очага. Юрту можно собрать за час и перевезти на одном верблюде — идеальное жилище для кочевника!", style:"Научно-популярный", type:"Описание с элементами рассуждения", theme:"Конструкция и инженерная гениальность юрты", thesis:"Казахская юрта — это не просто жилище, а настоящее инженерное чудо.", keywords:["юрта","кереге","уыки","шанырак","конструкция","кочевник","инженерное"] },
+    { id:"e2-3", text:"Река замерла под толстым панцирем льда, но подо льдом жизнь продолжалась. Рыбы, замедлив движение, стояли в глубоких ямах, экономя последние крохи кислорода. На берегу, среди голых тальников, лиса осторожно ступала по насту, принюхиваясь к следам полёвок. Мир словно застыл в ожидании — каждая живая тварь берегла силы для грядущей весны.", style:"Художественный", type:"Описание", theme:"Зимняя жизнь реки и её обитателей", thesis:"Мир словно застыл в ожидании — каждая живая тварь берегла силы для грядущей весны.", keywords:["река","лёд","рыбы","кислород","лиса","зима","весна","ожидание"] },
+  ],
+  "ent-3": [
+    { id:"e3-1", text:"Демографическая ситуация в Казахстане характеризуется устойчивым ростом населения при одновременном усилении урбанизационных процессов. Согласно данным Бюро национальной статистики, к началу 2024 года численность населения страны превысила 20 миллионов человек, из которых более 60% проживают в городах. Миграция сельского населения в мегаполисы создаёт давление на городскую инфраструктуру, рынок труда и жилищный фонд.", style:"Научный", type:"Рассуждение с элементами описания", theme:"Демографическая ситуация и урбанизация в Казахстане", thesis:"Миграция сельского населения в мегаполисы создаёт давление на городскую инфраструктуру.", keywords:["демография","Казахстан","население","урбанизация","миграция","мегаполисы","инфраструктура"] },
+    { id:"e3-2", text:"Спорт — это не просто физическая активность, это школа характера. На татами и на стадионе наши юные атлеты учатся тому, чему не научит ни один учебник: дисциплине, упорству и умению проигрывать достойно. Разве не спорт вывел Казахстан на мировую арену? От олимпийских побед Ильи Ильина до триумфов Геннадия Головкина — каждая медаль доказывает: маленькая страна способна на великие дела.", style:"Публицистический", type:"Рассуждение", theme:"Роль спорта в воспитании и престиже Казахстана", thesis:"Маленькая страна способна на великие дела.", keywords:["спорт","характер","атлеты","Казахстан","олимпийский","медаль","победа"] },
+    { id:"e3-3", text:"— Слушай, я тут подумал... может, нам стоит попробовать? — начал Ермек неуверенно. — Что попробовать? — Айгуль даже не оторвалась от телефона. — Ну, этот конкурс стартапов. Я идею придумал. Приложение для фермеров, чтобы они могли... — Ты серьёзно? — она наконец подняла глаза. — У тебя даже ноутбука нормального нет. — Вот именно поэтому и нужно попробовать, — улыбнулся он.", style:"Разговорный", type:"Повествование", theme:"Разговор друзей о стартап-идее", thesis:"Вот именно поэтому и нужно попробовать.", keywords:["Ермек","Айгуль","конкурс","стартап","приложение","фермеры","идея"] },
+  ],
+  "ent-4": [
+    { id:"e4-1", text:"Тенгрианство — древнейшая религиозная система тюркских народов, основанная на почитании Вечного Синего Неба (Тәңірі). В тенгрианской космологии мир разделён на три яруса: верхний (небесный), средний (земной) и нижний (подземный). Шаманы выступали посредниками между мирами, совершая обряды камлания. Элементы тенгрианства сохранились в казахской культуре по сей день — в уважении к природе, культе предков и символике национальных орнаментов.", style:"Научно-популярный", type:"Описание с элементами рассуждения", theme:"Тенгрианство и его влияние на казахскую культуру", thesis:"Элементы тенгрианства сохранились в казахской культуре по сей день.", keywords:["тенгрианство","Тәңірі","космология","шаманы","культура","природа","предки"] },
+    { id:"e4-2", text:"Коррозия металлов представляет собой процесс самопроизвольного разрушения металлов и сплавов вследствие химического или электрохимического взаимодействия с окружающей средой. Химическая коррозия протекает в неэлектролитных средах (газах, нефтепродуктах), тогда как электрохимическая — в электролитных (водных растворах, влажной атмосфере). Скорость коррозии зависит от природы металла, агрессивности среды и температуры. Методы защиты включают нанесение покрытий, легирование и катодную защиту.", style:"Научный", type:"Рассуждение с элементами описания", theme:"Коррозия металлов и методы защиты", thesis:"Скорость коррозии зависит от природы металла, агрессивности среды и температуры.", keywords:["коррозия","металлы","электрохимическая","разрушение","среда","защита","легирование"] },
+    { id:"e4-3", text:"Дорога змеилась между холмами, уводя путников всё дальше от знакомых мест. Караван двигался медленно: верблюды, нагруженные тюками, мерно покачивались в такт своему шагу. Впереди ехал старший — Бекболат, чей загорелый лоб пересекал глубокий шрам — память о схватке с барымтачами. Он молчал, но его молчание говорило больше, чем слова: каждый знал, что Бекболат ведёт караван не по карте, а по звёздам и по запаху ветра.", style:"Художественный", type:"Повествование с элементами описания", theme:"Караван под предводительством опытного путника", thesis:"Бекболат ведёт караван не по карте, а по звёздам и по запаху ветра.", keywords:["караван","верблюды","Бекболат","дорога","холмы","звёзды","ветер"] },
+  ],
+  "ent-5": [
+    { id:"e5-1", text:"Водородная энергетика рассматривается многими учёными как ключевой элемент декарбонизации мировой экономики. Водород, получаемый методом электролиза воды с использованием возобновляемой энергии («зелёный водород»), при сжигании или в топливных элементах выделяет только воду, не образуя парниковых газов. Однако на данном этапе стоимость производства зелёного водорода в 2–3 раза превышает стоимость «серого водорода», получаемого из природного газа.", style:"Научный", type:"Рассуждение", theme:"Водородная энергетика и декарбонизация", thesis:"Стоимость производства зелёного водорода в 2–3 раза превышает стоимость серого водорода.", keywords:["водород","энергетика","декарбонизация","электролиз","топливные","парниковые","зелёный"] },
+    { id:"e5-2", text:"Книга — это не пыльный предмет на полке, а машина времени, способная перенести нас в любую эпоху и страну. К сожалению, статистика свидетельствует: за последнее десятилетие средний казахстанец стал читать в три раза меньше. Мы теряем привычку к глубокому чтению, подменяя его скроллингом лент социальных сетей. Не пора ли нам вспомнить слова Абая: «Будь требователен к себе»? Каждая прочитанная книга — это инвестиция в собственный разум.", style:"Публицистический", type:"Рассуждение", theme:"Снижение культуры чтения в Казахстане", thesis:"Каждая прочитанная книга — это инвестиция в собственный разум.", keywords:["книга","чтение","Казахстан","статистика","Абай","соцсети","разум"] },
+    { id:"e5-3", text:"Настоящим приказом утверждается порядок проведения итоговой аттестации учащихся 9-х и 11-х классов общеобразовательных учебных заведений Республики Казахстан на 2024–2025 учебный год. Итоговая аттестация проводится в форме письменных экзаменов по обязательным предметам и Единого национального тестирования (ЕНТ). Ответственность за организацию и проведение аттестации возлагается на руководителей организаций образования и территориальные органы управления образованием.", style:"Официально-деловой", type:"Рассуждение", theme:"Порядок проведения итоговой аттестации", thesis:"Итоговая аттестация проводится в форме письменных экзаменов и ЕНТ.", keywords:["приказ","аттестация","экзамены","ЕНТ","учреждения","ответственность","порядок"] },
+  ],
+  "ent-6": [
+    { id:"e6-1", text:"Степной орёл — крупная хищная птица семейства ястребиных, обитающая в открытых ландшафтах Центральной Азии. Размах крыльев взрослой особи достигает 190–230 сантиметров, масса тела — от 2,5 до 4,5 килограммов. Степной орёл охотится преимущественно на сусликов, зайцев и других мелких млекопитающих. В последние десятилетия численность вида сокращается из-за распашки степей, применения пестицидов и столкновений с линиями электропередач.", style:"Научный", type:"Описание с элементами рассуждения", theme:"Степной орёл: биология и угрозы вымирания", thesis:"Численность вида сокращается из-за распашки степей и столкновений с линиями электропередач.", keywords:["орёл","степной","ястребиные","крылья","охота","численность","вымирание"] },
+    { id:"e6-2", text:"Старик Сарсен сидел у входа в юрту, подставив лицо последним лучам осеннего солнца. Руки его, тёмные и узловатые, как корни саксаула, покоились на коленях. Он вспоминал: вот здесь, на этом самом месте, полвека назад стоял аул его отца — двадцать юрт, триста лошадей, смех детей на рассвете. Теперь от аула не осталось ничего, кроме еле заметных следов кострищ да памяти, которая с каждым годом становилась прозрачнее, как утренний туман над Сырдарьёй.", style:"Художественный", type:"Описание с элементами повествования", theme:"Воспоминания старика об исчезнувшем ауле", thesis:"От аула не осталось ничего, кроме памяти, которая становилась прозрачнее.", keywords:["Сарсен","юрта","солнце","аул","память","лошади","Сырдарья"] },
+    { id:"e6-3", text:"Языковая политика — одна из самых чувствительных тем в полиэтническом Казахстане. С одной стороны, развитие казахского языка как государственного — это вопрос национальной идентичности. С другой — нельзя игнорировать права русскоязычного населения и потребность в английском языке как инструменте глобальной интеграции. Трёхъязычие, провозглашённое государственной политикой, должно не разделять, а объединять граждан нашей страны.", style:"Публицистический", type:"Рассуждение", theme:"Трёхъязычие и языковая политика Казахстана", thesis:"Трёхъязычие должно не разделять, а объединять граждан нашей страны.", keywords:["язык","политика","Казахстан","казахский","трёхъязычие","идентичность","граждане"] },
+  ],
+  "ent-7": [
+    { id:"e7-1", text:"Синтетические полимеры — высокомолекулярные соединения, получаемые в результате реакций полимеризации или поликонденсации. К полимерам, получаемым полимеризацией, относятся полиэтилен, полипропилен и поливинилхлорид. Реакция поликонденсации лежит в основе синтеза фенолформальдегидных смол, капрона и лавсана. Свойства полимеров определяются структурой макромолекул: линейные полимеры обладают термопластичностью, а пространственные — термореактивностью.", style:"Научный", type:"Описание с элементами рассуждения", theme:"Синтетические полимеры и их свойства", thesis:"Свойства полимеров определяются структурой макромолекул.", keywords:["полимеры","полимеризация","поликонденсация","макромолекулы","термопластичность","полиэтилен","структура"] },
+    { id:"e7-2", text:"— Апа, расскажи ещё раз про домбру, — попросила Дана, устраиваясь на тёплых одеялах. Бабушка улыбнулась: — Жил-был великий кюйши Курмангазы. Говорят, когда он играл «Сарыарку», даже кони останавливались и слушали. Его пальцы летали по струнам так быстро, что глаза не успевали за ними. — А почему его посадили в тюрьму? — Потому что музыка правды всегда пугает тех, кто привык ко лжи, — тихо ответила бабушка.", style:"Разговорный", type:"Повествование", theme:"Бабушкин рассказ о Курмангазы", thesis:"Музыка правды всегда пугает тех, кто привык ко лжи.", keywords:["домбра","Дана","бабушка","Курмангазы","кюйши","Сарыарка","музыка","правда"] },
+    { id:"e7-3", text:"Ни для кого не секрет, что наша система образования нуждается в серьёзных реформах. Устаревшие программы, перегруженные учебники и формальный подход к оцениванию — всё это тормозит развитие критического мышления у школьников. Мы гордимся нашими олимпиадниками, но средний уровень образования остаётся тревожно низким. Пришло время честно признать: реформа нужна не завтра, а вчера.", style:"Публицистический", type:"Рассуждение", theme:"Необходимость реформы образования в Казахстане", thesis:"Реформа нужна не завтра, а вчера.", keywords:["образование","реформа","программы","мышление","олимпиадники","оценивание","школьники"] },
+  ],
+  "ent-8": [
+    { id:"e8-1", text:"Великий Шёлковый путь на протяжении более двух тысячелетий связывал цивилизации Востока и Запада. Через территорию современного Казахстана проходили ключевые ветви этого торгового маршрута. Города Отрар, Тараз и Сайрам превратились в крупные центры торговли, ремёсел и культурного обмена. По караванным тропам перемещались не только товары — шёлк, специи, драгоценные камни, — но и идеи, религии и технологии, формировавшие облик целых народов.", style:"Научно-популярный", type:"Повествование с элементами описания", theme:"Великий Шёлковый путь через Казахстан", thesis:"По караванным тропам перемещались не только товары, но и идеи, религии и технологии.", keywords:["Шёлковый","путь","караван","Отрар","Тараз","торговля","цивилизации"] },
+    { id:"e8-2", text:"Луна висела над степью огромным белым фонарём, заливая всё вокруг призрачным серебристым светом. Ковыль переливался, как ожившее море, и откуда-то из глубины этого моря доносились звуки домбры — печальные, протяжные, как плач ветра в горном ущелье. Айтуар играл, закрыв глаза, и казалось, что не он управляет мелодией, а она ведёт его за собой, как река несёт листок к неведомому берегу.", style:"Художественный", type:"Описание с элементами повествования", theme:"Ночная игра на домбре в степи", thesis:"Казалось, что не он управляет мелодией, а она ведёт его за собой.", keywords:["луна","степь","ковыль","домбра","Айтуар","мелодия","ветер","река"] },
+    { id:"e8-3", text:"Каждый гражданин Республики Казахстан имеет право на охрану здоровья, что гарантировано статьёй 29 Конституции. Государственная программа развития здравоохранения предусматривает обеспечение населения качественной и доступной медицинской помощью. Обязательное социальное медицинское страхование (ОСМС) введено с целью создания устойчивой модели финансирования системы здравоохранения. Работодатели обязаны осуществлять ежемесячные отчисления взносов за своих работников.", style:"Официально-деловой", type:"Рассуждение", theme:"Право на охрану здоровья и система ОСМС", thesis:"ОСМС введено с целью создания устойчивой модели финансирования системы здравоохранения.", keywords:["Конституция","здравоохранение","ОСМС","страхование","программа","право","финансирование"] },
+  ],
+  "ent-9": [
+    { id:"e9-1", text:"Нейропластичность — способность мозга изменять свою структуру и функции под воздействием опыта, обучения и травм. Долгое время считалось, что мозг взрослого человека статичен, однако современные исследования с применением функциональной магнитно-резонансной томографии (фМРТ) доказали обратное. Формирование новых синаптических связей продолжается на протяжении всей жизни. Понимание механизмов нейропластичности открывает перспективы для реабилитации пациентов после инсульта и лечения нейродегенеративных заболеваний.", style:"Научный", type:"Рассуждение", theme:"Нейропластичность мозга и её медицинское значение", thesis:"Понимание механизмов нейропластичности открывает перспективы для реабилитации пациентов после инсульта.", keywords:["нейропластичность","мозг","синаптические","фМРТ","обучение","реабилитация","нейродегенеративные"] },
+    { id:"e9-2", text:"Сельское хозяйство Казахстана кормит миллионы людей далеко за пределами наших границ. Мы — одни из крупнейших экспортёров пшеницы в мире. Но задумывались ли мы о том, какой ценой достаётся этот хлеб? Деградация почв, дефицит водных ресурсов, устаревшая техника — всё это подрывает продовольственную безопасность страны. Нам нужна не просто модернизация, а революция в подходе к земледелию: точное земледелие, капельное орошение, органическое фермерство.", style:"Публицистический", type:"Рассуждение", theme:"Проблемы и будущее сельского хозяйства Казахстана", thesis:"Нам нужна не просто модернизация, а революция в подходе к земледелию.", keywords:["сельское","хозяйство","пшеница","почва","вода","модернизация","земледелие"] },
+    { id:"e9-3", text:"Она стояла перед мольбертом, не решаясь сделать первый мазок. Белый холст пугал своей пустотой, как чистая тетрадь — первоклассника. За окном мастерской шумел Алматы — город, который она пыталась поймать в краски уже третий год. Наконец кисть коснулась поверхности — синий, холодный, как январский рассвет над Алатау. И в этот момент страх отступил, потому что первый цвет — это уже начало разговора между художником и миром.", style:"Художественный", type:"Повествование с элементами описания", theme:"Начало творческого процесса художницы", thesis:"Первый цвет — это уже начало разговора между художником и миром.", keywords:["мольберт","холст","Алматы","кисть","художник","краски","Алатау","разговор"] },
+  ],
+  "ent-10": [
+    { id:"e10-1", text:"Блокчейн-технология основана на принципе распределённого реестра, в котором каждый участник сети хранит копию всей цепочки транзакций. Каждый блок содержит хеш предыдущего блока, временную метку и данные транзакций. Изменение информации в одном блоке потребует пересчёта хешей всех последующих блоков и согласия большинства участников сети, что делает систему практически неуязвимой для фальсификации. Помимо криптовалют, блокчейн находит применение в логистике, медицине и государственном управлении.", style:"Научный", type:"Рассуждение с элементами описания", theme:"Принципы блокчейн-технологии и её применение", thesis:"Система практически неуязвима для фальсификации.", keywords:["блокчейн","реестр","хеш","транзакции","криптовалюта","фальсификация","распределённый"] },
+    { id:"e10-2", text:"— Мам, я поступил! — голос Данияра дрожал. На том конце провода тишина. Потом — тихий всхлип. — Мама? Ты плачешь? — Это от радости, балам. От радости. Знаешь... папа бы гордился. — Я знаю, мам. Я знаю. — Данияр прижал телефон к груди и посмотрел в окно общежития. Москва шумела внизу, чужая и огромная, но в этот момент расстояние между ним и маленьким домом в Костанае сжалось до размера телефонной трубки.", style:"Художественный", type:"Повествование", theme:"Сын сообщает матери о поступлении", thesis:"Расстояние сжалось до размера телефонной трубки.", keywords:["Данияр","мама","поступление","радость","папа","Москва","Костанай","телефон"] },
+    { id:"e10-3", text:"Где ваши дети проводят свободное время? Если ваш ответ — «в телефоне», вы не одиноки. По данным ЮНИСЕФ, казахстанские подростки проводят в интернете в среднем более пяти часов в день. Кибербуллинг, зависимость, контакт с деструктивным контентом — это не абстрактные угрозы, а повседневная реальность наших детей. Мы должны не запрещать технологии, а научить ребёнка безопасному поведению в цифровой среде. Это задача каждого родителя и каждого учителя.", style:"Публицистический", type:"Рассуждение", theme:"Безопасность детей в интернете", thesis:"Мы должны не запрещать технологии, а научить ребёнка безопасному поведению в цифровой среде.", keywords:["дети","интернет","кибербуллинг","ЮНИСЕФ","подростки","безопасность","цифровой"] }
+  ]
+};
+
+// ===== UI OPTIONS =====
+const STYLES = [
+  { key: "Научный", color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/40", icon: "🟢" },
+  { key: "Официально-деловой", color: "bg-blue-500/20 text-blue-400 border-blue-500/40", icon: "🔵" },
+  { key: "Публицистический", color: "bg-red-500/20 text-red-400 border-red-500/40", icon: "🔴" },
+  { key: "Художественный", color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/40", icon: "🟡" },
+  { key: "Разговорный", color: "bg-orange-500/20 text-orange-400 border-orange-500/40", icon: "🟠" },
+  { key: "Научно-популярный", color: "bg-teal-500/20 text-teal-400 border-teal-500/40", icon: "⚪" },
+];
+
+const TYPES = [
+  { key: "Повествование", color: "bg-cyan-500/20 text-cyan-400 border-cyan-500/40", icon: "⚡" },
+  { key: "Описание", color: "bg-pink-500/20 text-pink-400 border-pink-500/40", icon: "📷" },
+  { key: "Рассуждение", color: "bg-amber-500/20 text-amber-400 border-amber-500/40", icon: "⚛️" },
+  { key: "Описание с элементами рассуждения", color: "bg-pink-500/20 text-pink-400 border-pink-500/40", icon: "📷⚛️" },
+  { key: "Описание с элементами повествования", color: "bg-pink-500/20 text-pink-400 border-pink-500/40", icon: "📷⚡" },
+  { key: "Рассуждение с элементами описания", color: "bg-amber-500/20 text-amber-400 border-amber-500/40", icon: "⚛️📷" },
+  { key: "Рассуждение с элементами повествования", color: "bg-amber-500/20 text-amber-400 border-amber-500/40", icon: "⚛️⚡" },
+  { key: "Повествование с элементами описания", color: "bg-cyan-500/20 text-cyan-400 border-cyan-500/40", icon: "⚡📷" },
+];
+
+// ===== STATE =====
+let currentMode = null;
+let currentGrade = null;
+let currentTexts = [];
+let currentIndex = 0;
+let selectedStyle = null;
+let selectedType = null;
+let quizAnswers = [];
+let allRecords = [];
+
+// ===== SCREENS =====
+function showScreen(id) {
+  ['screen-home', 'screen-grades', 'screen-quiz', 'screen-results', 'screen-lab'].forEach(s => {
+    const el = document.getElementById(s);
+    if(el) el.classList.add('hidden');
+  });
+  const target = document.getElementById(id);
+  if(target) target.classList.remove('hidden');
+  document.getElementById('app').scrollTop = 0;
+}
+
+function goHome() {
+  showScreen('screen-home');
+  currentMode = null;
+}
+
+function goBack() {
+  if (currentMode === 'grade') showGrades();
+  else goHome();
+}
+
+function showLab() {
+  currentMode = 'lab';
+  showScreen('screen-lab');
+  document.getElementById('lab-input').value = '';
+  document.getElementById('lab-results').classList.add('hidden');
+  document.getElementById('lab-error').classList.add('hidden');
+}
+
+function runLabAnalysis() {
+    const rawText = document.getElementById('lab-input').value;
+    const errorMsg = document.getElementById('lab-error');
+    const resultsDiv = document.getElementById('lab-results');
+
+    errorMsg.classList.add('hidden');
+    resultsDiv.classList.add('hidden');
+
+    try {
+        if (rawText.trim().length < 15) {
+            errorMsg.innerText = "⚠️ Текст слишком короткий для анализа. Введите хотя бы одно предложение.";
+            errorMsg.classList.remove('hidden');
+            return;
+        }
+
+        const res = runCoreAnalysis(rawText);
+
+        resultsDiv.innerHTML = `
+            <div class="bg-bg-card border border-surface rounded-2xl p-6 anim-slide">
+                <h3 class="font-heading font-bold text-lg text-txt-bright mb-4 flex items-center gap-2">
+                    <i data-lucide="activity" class="text-accent-light"></i> Спектральный анализ
+                </h3>
+                <div class="flex flex-wrap gap-2 mb-4 text-xs">
+                    <span class="bg-blue-600/80 text-white px-2 py-1 rounded">Официально-деловой</span>
+                    <span class="bg-emerald-600/80 text-white px-2 py-1 rounded">Научный</span>
+                    <span class="bg-red-600/80 text-white px-2 py-1 rounded">Публицистический</span>
+                    <span class="bg-yellow-500/90 text-black px-2 py-1 rounded">Художественный</span>
+                    <span class="bg-orange-600/80 text-white px-2 py-1 rounded">Разговорный</span>
+                </div>
+                <div class="bg-surface/30 p-4 rounded-xl text-[15px] leading-relaxed font-serif text-txt-dim">
+                    ${res.highlightedHTML}
+                </div>
+            </div>
+
+            <div class="bg-bg-card border border-surface rounded-2xl p-6 anim-slide" style="animation-delay: 0.1s">
+                <h3 class="font-heading font-bold text-lg text-txt-bright mb-4 flex items-center gap-2">
+                    <i data-lucide="target" class="${res.styleColor}"></i> Вектор Силы (Стиль)
+                </h3>
+                <div class="text-xl font-bold ${res.styleColor} mb-2">${res.style}</div>
+                <div class="text-txt-bright font-medium mb-3">${res.goal}</div>
+                <div class="text-sm text-txt-dim bg-surface/30 p-3 rounded-lg border-l-2 ${res.styleColor.replace('text', 'border')}">${res.styleReason}</div>
+            </div>
+
+            <div class="bg-bg-card border border-surface rounded-2xl p-6 anim-slide" style="animation-delay: 0.2s">
+                <h3 class="font-heading font-bold text-lg text-txt-bright mb-4 flex items-center gap-2">
+                    <i data-lucide="layers" class="text-purple-400"></i> Архитектура (Тип речи)
+                </h3>
+                <div class="flex gap-2 mb-4">
+                    <div class="flex-1 bg-surface/40 p-3 rounded-lg text-center"><div class="text-amber-400 font-bold">${res.reasoningScore}</div><div class="text-xs text-txt-dim">Рассуждение</div></div>
+                    <div class="flex-1 bg-surface/40 p-3 rounded-lg text-center"><div class="text-cyan-400 font-bold">${res.kineticVerbs}</div><div class="text-xs text-txt-dim">Повествование</div></div>
+                    <div class="flex-1 bg-surface/40 p-3 rounded-lg text-center"><div class="text-pink-400 font-bold">${res.potentialAdjs}</div><div class="text-xs text-txt-dim">Описание</div></div>
+                </div>
+                <div class="text-lg font-bold text-txt-bright mb-2">${res.typeText}</div>
+                <div class="text-sm text-txt-dim">${res.typeReason}</div>
+            </div>
+
+            <div class="bg-bg-card border border-surface rounded-2xl p-6 anim-slide" style="animation-delay: 0.3s">
+                <h3 class="font-heading font-bold text-lg text-txt-bright mb-4 flex items-center gap-2">
+                    <i data-lucide="weight" class="text-accent-light"></i> Гравитация (Масса)
+                </h3>
+                <div class="flex flex-wrap gap-2 mb-4">
+                    ${res.topWordsList.map(w => `<span class="bg-accent/10 text-accent-light px-3 py-1 rounded-full text-sm font-medium border border-accent/20">${w.toUpperCase()}</span>`).join('')}
+                </div>
+                <div class="text-sm text-txt-dim mb-4"><strong>Тема:</strong> Текст о явлениях, связанных с: <span class="text-emerald-400 font-semibold">${res.themeString}</span>.</div>
+                <blockquote class="bg-surface/30 p-4 rounded-xl border-l-4 border-yellow-500/50 text-txt-dim italic text-[15px]">
+                    <div class="text-xs text-yellow-500/80 uppercase font-bold mb-1">Главный тезис</div>
+                    ${res.bestSentence}
+                </blockquote>
+            </div>
+        `;
+        lucide.createIcons();
+        resultsDiv.classList.remove('hidden');
+    } catch (error) {
+        errorMsg.innerText = "⚠️ Ошибка анализа: " + error.message;
+        errorMsg.classList.remove('hidden');
+    }
+}
+
+// ===== GRADES =====
+function showGrades() {
+  showScreen('screen-grades');
+  const grid = document.getElementById('grades-grid');
+  grid.innerHTML = '';
+  const grades = [5,6,7,8,9,10,11];
+  grades.forEach((g, i) => {
+    const stats = getGradeStats(String(g));
+    const btn = document.createElement('button');
+    btn.className = `grade-btn anim-slide bg-bg-card border border-surface rounded-2xl p-5 text-center hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5`;
+    btn.style.animationDelay = `${i * 0.06}s`;
+    btn.innerHTML = `
+      <div class="text-3xl font-heading font-bold text-txt-bright mb-1">${g}</div>
+      <div class="text-xs text-txt-dim mb-2">класс</div>
+      <div class="text-xs text-accent-light">${stats.total > 0 ? `✓ ${stats.correct}/${stats.total}` : 'Начать →'}</div>
+    `;
+    btn.onclick = () => startGrade(String(g));
+    grid.appendChild(btn);
+  });
+  lucide.createIcons();
+}
+
+// ===== START QUIZ =====
+function startGrade(grade) {
+  currentMode = 'grade';
+  currentGrade = grade;
+  currentTexts = [...(TEXTS[grade] || [])];
+  currentIndex = 0;
+  quizAnswers = [];
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+function startENT() {
+  showScreen('screen-grades');
+  const grid = document.getElementById('grades-grid');
+  grid.innerHTML = '';
+  document.querySelector('#screen-grades h2').textContent = 'Выбери вариант ЕНТ';
+  for (let i = 1; i <= 10; i++) {
+    const stats = getGradeStats(`ent-${i}`);
+    const btn = document.createElement('button');
+    btn.className = `grade-btn anim-slide bg-bg-card border border-surface rounded-2xl p-5 text-center hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/5`;
+    btn.style.animationDelay = `${(i-1) * 0.06}s`;
+    btn.innerHTML = `
+      <div class="text-2xl font-heading font-bold text-txt-bright mb-1">№${i}</div>
+      <div class="text-xs text-txt-dim mb-2">вариант</div>
+      <div class="text-xs text-purple-400">${stats.total > 0 ? `✓ ${stats.correct}/${stats.total}` : 'Начать →'}</div>
+    `;
+    btn.onclick = () => {
+      currentMode = 'ent';
+      currentGrade = `ent-${i}`;
+      currentTexts = [...(TEXTS[`ent-${i}`] || [])];
+      currentIndex = 0;
+      quizAnswers = [];
+      showScreen('screen-quiz');
+      renderQuestion();
+    };
+    grid.appendChild(btn);
+  }
+  lucide.createIcons();
+}
+
+// ===== RENDER QUESTION =====
+function renderQuestion() {
+  if (currentIndex >= currentTexts.length) {
+    showResults();
+    return;
+  }
+  const t = currentTexts[currentIndex];
+  selectedStyle = null;
+  selectedType = null;
+
+  const progress = document.getElementById('quiz-progress');
+  progress.textContent = `${currentIndex + 1} / ${currentTexts.length}`;
+
+  const c = document.getElementById('quiz-container');
+  c.innerHTML = `
+    <div class="anim-fade">
+      <div class="bg-bg-card border border-surface rounded-2xl p-6 mb-6">
+        <div class="flex items-start gap-3 mb-4">
+          <div class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <i data-lucide="file-text" style="width:18px;height:18px" class="text-accent-light"></i>
+          </div>
+          <div>
+            <div class="text-xs text-txt-dim mb-1">${currentMode === 'ent' ? 'Вариант ЕНТ' : currentGrade + ' класс'} · Текст ${currentIndex + 1}</div>
+            <p class="text-txt leading-relaxed text-[15px]">${t.text}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-sm font-semibold text-txt-dim mb-3 flex items-center gap-2">
+          <i data-lucide="palette" style="width:16px;height:16px"></i> 1. Определи стиль речи
+        </h3>
+        <div class="flex flex-wrap gap-2" id="style-chips">
+          ${STYLES.map(s => `
+            <button class="style-chip ${s.color} border rounded-full px-4 py-2 text-sm font-medium" data-style="${s.key}" onclick="selectStyle('${s.key}')">
+              ${s.icon} ${s.key}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-sm font-semibold text-txt-dim mb-3 flex items-center gap-2">
+          <i data-lucide="layers" style="width:16px;height:16px"></i> 2. Определи тип речи
+        </h3>
+        <div class="flex flex-wrap gap-2" id="type-chips">
+          ${TYPES.map(tp => `
+            <button class="style-chip ${tp.color} border rounded-full px-3 py-2 text-sm font-medium" data-type="${tp.key}" onclick="selectType('${tp.key.replace(/'/g, "\\'")}')">
+              ${tp.icon} ${tp.key}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+      <button id="submit-btn" onclick="submitAnswer()" disabled
+        class="w-full py-3.5 rounded-xl font-semibold text-white bg-surface text-txt-dim cursor-not-allowed transition-all text-sm">
+        Выбери стиль и тип речи
+      </button>
+    </div>
+  `;
+  lucide.createIcons();
+}
+
+function selectStyle(style) {
+  selectedStyle = style;
+  document.querySelectorAll('#style-chips .style-chip').forEach(el => {
+    el.classList.toggle('ring-2', el.dataset.style === style);
+    el.classList.toggle('ring-offset-2', el.dataset.style === style);
+    el.classList.toggle('ring-offset-bg', el.dataset.style === style);
+  });
+  updateSubmitBtn();
+}
+
+function selectType(type) {
+  selectedType = type;
+  document.querySelectorAll('#type-chips .style-chip').forEach(el => {
+    el.classList.toggle('ring-2', el.dataset.type === type);
+    el.classList.toggle('ring-offset-2', el.dataset.type === type);
+    el.classList.toggle('ring-offset-bg', el.dataset.type === type);
+  });
+  updateSubmitBtn();
+}
+
+function updateSubmitBtn() {
+  const btn = document.getElementById('submit-btn');
+  if (selectedStyle && selectedType) {
+    btn.disabled = false;
+    btn.className = 'w-full py-3.5 rounded-xl font-semibold text-white bg-accent hover:bg-accent-dim transition-all text-sm anim-pulse cursor-pointer';
+    btn.textContent = 'Проверить ответ';
+  }
+}
+
+// ===== SUBMIT & LOCAL STORAGE SAVE =====
+async function submitAnswer() {
+  const t = currentTexts[currentIndex];
+  const styleCorrect = selectedStyle === t.style;
+  const typeCorrect = selectedType === t.type;
+
+  quizAnswers.push({ text: t, selectedStyle, selectedType, styleCorrect, typeCorrect });
+
+  // Сохраняем статистику в память браузера (localStorage)
+  const newRecord = {
+    mode: currentMode,
+    grade: currentGrade,
+    text_id: t.id,
+    correct_style: styleCorrect,
+    correct_type: typeCorrect,
+    completed_at: new Date().toISOString()
+  };
+  allRecords.push(newRecord);
+  try {
+      localStorage.setItem('fizika_teksta_stats', JSON.stringify(allRecords));
+  } catch(e) {}
+  
+  renderHomeStats(); // Мгновенно обновляем цифры на главном экране
+
+  if (window.dataSdk && allRecords.length < 999) {
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Сохранение...';
+    try {
+      await window.dataSdk.create(newRecord);
+    } catch(e) {}
+  }
+
+  showFeedback(t, styleCorrect, typeCorrect);
+}
+
+// ===== FEEDBACK С ПОЛНЫМ РАЗБОРОМ =====
+function showFeedback(t, styleCorrect, typeCorrect) {
+  const bothCorrect = styleCorrect && typeCorrect;
+  const c = document.getElementById('quiz-container');
+
+  c.innerHTML = `
+    <div class="anim-scale">
+      <div class="${bothCorrect ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-red-500/10 border-red-500/30'} border rounded-2xl p-6 mb-4 text-center relative overflow-hidden">
+        ${bothCorrect ? `
+          <span class="confetti-1 absolute top-4 left-1/2 text-2xl">🎉</span>
+          <span class="confetti-2 absolute top-4 left-1/2 text-xl">⭐</span>
+          <span class="confetti-3 absolute top-4 left-1/2 text-lg">✨</span>
+        ` : ''}
+        <div class="text-4xl mb-2">${bothCorrect ? '🎯' : (styleCorrect || typeCorrect) ? '🔶' : '❌'}</div>
+        <div class="font-heading font-bold text-xl text-txt-bright">
+          ${bothCorrect ? 'Отлично!' : (styleCorrect || typeCorrect) ? 'Частично верно' : 'Не совсем так'}
+        </div>
+        <div class="text-sm text-txt-dim mt-1">
+          ${styleCorrect && typeCorrect ? 'Оба ответа верны!' :
+            styleCorrect ? 'Стиль верный, но тип речи — нет' :
+            typeCorrect ? 'Тип речи верный, но стиль — нет' :
+            'Оба ответа неверны'}
+        </div>
+      </div>
+
+      <div class="${styleCorrect ? 'result-correct' : 'result-wrong'} rounded-xl p-4 mb-3">
+        <div class="font-semibold text-sm mb-1 ${styleCorrect ? 'text-emerald-400' : 'text-red-400'}">
+          Стиль: ${styleCorrect ? '✓' : '✗'} ${styleCorrect ? t.style : `Твой: ${selectedStyle} → Верный: ${t.style}`}
+        </div>
+      </div>
+
+      <div class="${typeCorrect ? 'result-correct' : 'result-wrong'} rounded-xl p-4 mb-4">
+        <div class="font-semibold text-sm mb-1 ${typeCorrect ? 'text-emerald-400' : 'text-red-400'}">
+          Тип речи: ${typeCorrect ? '✓' : '✗'} ${typeCorrect ? t.type : `Твой: ${selectedType} → Верный: ${t.type}`}
+        </div>
+      </div>
+
+      <div class="bg-surface/30 border border-surface rounded-xl p-4 mb-6 text-left">
+        <h4 class="font-semibold text-accent-light text-sm mb-3 flex items-center gap-2">
+          <i data-lucide="book-open" style="width:16px;height:16px"></i> Полный разбор текста
+        </h4>
+        <div class="text-sm text-txt-dim space-y-2">
+          <p><strong class="text-txt-bright">Тема:</strong> ${t.theme}</p>
+          <p><strong class="text-txt-bright">Главная мысль (тезис):</strong> "${t.thesis}"</p>
+          <p><strong class="text-txt-bright">Ключевые слова:</strong> <span class="text-emerald-400">${t.keywords ? t.keywords.join(', ') : ''}</span></p>
+        </div>
+      </div>
+
+      <button onclick="nextQuestion()" class="w-full py-3.5 rounded-xl font-semibold text-white bg-accent hover:bg-accent-dim transition-all text-sm cursor-pointer">
+        ${currentIndex + 1 < currentTexts.length ? 'Следующий текст →' : 'Результаты →'}
+      </button>
+    </div>
+  `;
+  lucide.createIcons();
+}
+
+function nextQuestion() {
+  currentIndex++;
+  renderQuestion();
+}
+
+// ===== RESULTS =====
+function showResults() {
+  showScreen('screen-results');
+  const c = document.getElementById('results-container');
+  const totalStyle = quizAnswers.filter(a => a.styleCorrect).length;
+  const totalType = quizAnswers.filter(a => a.typeCorrect).length;
+  const totalBoth = quizAnswers.filter(a => a.styleCorrect && a.typeCorrect).length;
+  const total = quizAnswers.length;
+  const pct = Math.round((totalBoth / total) * 100);
+
+  const grade = pct >= 90 ? '5' : pct >= 70 ? '4' : pct >= 50 ? '3' : '2';
+  const emoji = grade === '5' ? '🏆' : grade === '4' ? '👏' : grade === '3' ? '📚' : '💪';
+
+  c.innerHTML = `
+    <div class="anim-fade text-center mb-8">
+      <div class="text-6xl mb-3">${emoji}</div>
+      <h2 class="font-heading text-3xl font-bold text-txt-bright mb-2">Результаты</h2>
+      <p class="text-txt-dim">${currentMode === 'ent' ? 'Вариант ЕНТ ' + currentGrade.replace('ent-','№') : currentGrade + ' класс'}</p>
+    </div>
+
+    <div class="grid grid-cols-3 gap-3 mb-6">
+      <div class="bg-bg-card border border-surface rounded-xl p-4 text-center anim-slide" style="animation-delay:0.1s">
+        <div class="text-2xl font-heading font-bold text-emerald-400">${totalBoth}/${total}</div>
+        <div class="text-xs text-txt-dim mt-1">Оба верных</div>
+      </div>
+      <div class="bg-bg-card border border-surface rounded-xl p-4 text-center anim-slide" style="animation-delay:0.15s">
+        <div class="text-2xl font-heading font-bold text-accent-light">${totalStyle}/${total}</div>
+        <div class="text-xs text-txt-dim mt-1">Стиль</div>
+      </div>
+      <div class="bg-bg-card border border-surface rounded-xl p-4 text-center anim-slide" style="animation-delay:0.2s">
+        <div class="text-2xl font-heading font-bold text-purple-400">${totalType}/${total}</div>
+        <div class="text-xs text-txt-dim mt-1">Тип речи</div>
+      </div>
+    </div>
+
+    <div class="flex gap-3">
+      <button onclick="goHome()" class="flex-1 py-3 rounded-xl font-semibold text-txt border border-surface hover:border-accent/40 transition-all text-sm cursor-pointer">
+        На главную
+      </button>
+      <button onclick="${currentMode === 'ent' ? 'startENT()' : 'showGrades()'}" class="flex-1 py-3 rounded-xl font-semibold text-white bg-accent hover:bg-accent-dim transition-all text-sm cursor-pointer">
+        Ещё раз
+      </button>
+    </div>
+  `;
+  lucide.createIcons();
+}
+
+// ===== STATS =====
+function getGradeStats(grade) {
+  const records = allRecords.filter(r => r.grade === grade);
+  const correct = records.filter(r => r.correct_style && r.correct_type).length;
+  return { total: records.length, correct };
+}
+
+function renderHomeStats() {
+  const el = document.getElementById('stats-content');
+  if (allRecords.length === 0) {
+    el.innerHTML = '<p class="text-txt-dim">Пока нет результатов. Пройди первый тест!</p>';
+    return;
+  }
+
+  const totalBoth = allRecords.filter(r => r.correct_style && r.correct_type).length;
+
+  el.innerHTML = `
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      <div class="bg-surface/40 rounded-xl p-3 text-center">
+        <div class="text-xl font-heading font-bold text-txt-bright">${allRecords.length}</div>
+        <div class="text-xs text-txt-dim">Всего ответов</div>
+      </div>
+      <div class="bg-surface/40 rounded-xl p-3 text-center">
+        <div class="text-xl font-heading font-bold text-emerald-400">${totalBoth}</div>
+        <div class="text-xs text-txt-dim">Идеальных</div>
+      </div>
+    </div>
+  `;
+}
+
+// ===== APP INIT & ELEMENT SDK =====
+const defaultConfig = {
+  app_title: 'Физика Текста',
+  subtitle_text: 'Методология анализа текста',
+  background_color: '#0f0f1a',
+  surface_color: '#1a1a2e',
+  text_color: '#e2e2f0',
+  accent_color: '#6366f1',
+  secondary_action_color: '#9898b8',
+  font_family: 'Playfair Display',
+  font_size: 16
+};
+
+function applyConfig(config) {
+  const title = config.app_title || defaultConfig.app_title;
+  const subtitle = config.subtitle_text || defaultConfig.subtitle_text;
+  const bg = config.background_color || defaultConfig.background_color;
+  const surface = config.surface_color || defaultConfig.surface_color;
+  const txt = config.text_color || defaultConfig.text_color;
+  const accent = config.accent_color || defaultConfig.accent_color;
+  const secAction = config.secondary_action_color || defaultConfig.secondary_action_color;
+  const font = config.font_family || defaultConfig.font_family;
+  const fontSize = config.font_size || defaultConfig.font_size;
+
+  document.getElementById('nav-title').textContent = title;
+  document.getElementById('nav-subtitle').textContent = subtitle;
+
+  document.body.style.backgroundColor = bg;
+  document.body.style.color = txt;
+  document.body.style.fontFamily = `${font}, Source Sans 3, system-ui, sans-serif`;
+  document.body.style.fontSize = `${fontSize}px`;
+
+  document.querySelectorAll('.font-heading').forEach(el => {
+    el.style.fontFamily = `${font}, Georgia, serif`;
+  });
+
+  const logo = document.querySelector('nav .rounded-lg');
+  if (logo) logo.style.background = `linear-gradient(135deg, ${accent}, #a855f7)`;
+}
+
+if(window.elementSdk) {
+    window.elementSdk.init({
+      defaultConfig,
+      onConfigChange: async (config) => { applyConfig(config); },
+      mapToCapabilities: (config) => ({
+        recolorables: [
+          { get: () => config.background_color || defaultConfig.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
+          { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+          { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+          { get: () => config.accent_color || defaultConfig.accent_color, set: (v) => { config.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); } },
+          { get: () => config.secondary_action_color || defaultConfig.secondary_action_color, set: (v) => { config.secondary_action_color = v; window.elementSdk.setConfig({ secondary_action_color: v }); } },
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || defaultConfig.font_family,
+          set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
+        },
+        fontSizeable: {
+          get: () => config.font_size || defaultConfig.font_size,
+          set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
+        }
+      }),
+      mapToEditPanelValues: (config) => new Map([
+        ['app_title', config.app_title || defaultConfig.app_title],
+        ['subtitle_text', config.subtitle_text || defaultConfig.subtitle_text]
+      ])
+    });
+}
+
+const dataHandler = {
+  onDataChanged(data) {
+    if (data && data.length > 0) {
+        allRecords = data;
+        renderHomeStats();
+    }
+  }
+};
+
+(async () => {
+  // Вытаскиваем статистику из памяти при запуске
+  const localStats = localStorage.getItem('fizika_teksta_stats');
+  if (localStats) {
+      try { allRecords = JSON.parse(localStats); } catch(e) {}
+  }
+  renderHomeStats(); // Сразу убираем надпись "Загрузка..."
+
+  if(window.dataSdk) {
+      const result = await window.dataSdk.init(dataHandler);
+      if (result && result.isError) console.error('Data SDK init failed');
+  }
+  lucide.createIcons();
+})();
+  </script>
+</body>
+</html>
